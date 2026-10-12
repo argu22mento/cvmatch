@@ -54,7 +54,6 @@ textarea {
 }
 
 .cv {
-  height: 100%;
   padding: 7.5cqw 8cqw;
   display: flex;
   flex-direction: column;
@@ -100,25 +99,26 @@ textarea {
   .is-reading .cv-skills li { padding: 5px 12px; font-size: 14px; }
 }
 
-/* ───────────── Impresión / Guardar como PDF: solo el folio ───────────── */
+/* ───────────── Impresión / Guardar como PDF: solo el CV ───────────── */
+
+.print-root { display: none; }
 
 @media print {
   @page { size: A4; margin: 0; }
-  html, body, #root { background: #fff !important; height: 297mm !important; overflow: hidden !important; }
-  body * { visibility: hidden !important; }
-  .a4, .a4 * { visibility: visible !important; }
-  .a4 {
-    position: fixed !important;
-    inset: 0 auto auto 0;
-    width: 210mm !important;
-    height: 297mm !important;
-    max-width: none !important;
-    aspect-ratio: auto !important;
-    border-radius: 0 !important;
-    opacity: 1 !important;
-    container-type: inline-size !important;
+  html, body { background: #fff !important; }
+  #root { display: none !important; }
+  .print-root { display: block; }
+  .print-root .a4 {
+    width: 210mm;
+    min-height: 297mm;
+    aspect-ratio: auto;
+    border-radius: 0;
+    opacity: 1;
   }
-  .a4 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-root .cv { height: auto; }
+  .print-root .cv-list li,
+  .print-root .cv-row { break-inside: avoid; }
+  .print-root * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
-import { Briefcase, Download, FileText, Loader2, PencilLine, RotateCcw, Sparkles, Wand2 } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { AlertCircle, Briefcase, Download, FileText, Loader2, PencilLine, Sparkles, Wand2 } from 'lucide-react';
 
-import { BASE_CV, OPTIMIZED_CV, SAMPLE_CV, SAMPLE_OFFER } from './cvData';
+import { BASE_CV, SAMPLE_CV, SAMPLE_OFFER } from './cvData';
 import { usePdfImport } from './usePdfImport';
 import InputCard from './InputCard';
 import { PdfAttachButton, PdfBanner } from './PdfAttach';
@@ -18,10 +19,12 @@ const btnSecondary =
   'inline-flex h-12 items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-5 text-[16px] sm:text-[15px] font-medium text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500';
 
 export default function App() {
-  const [cvText, setCvText] = useState(SAMPLE_CV);
-  const [offerText, setOfferText] = useState(SAMPLE_OFFER);
+  const [cvText, setCvText] = useState('');
+  const [offerText, setOfferText] = useState('');
   const [loading, setLoading] = useState(false);
-  const [optimized, setOptimized] = useState(false);
+  const [result, setResult] = useState(null); // CV adaptado devuelto por la IA
+  const [error, setError] = useState('');
+  const optimized = Boolean(result);
   const [tab, setTab] = useState('data'); // solo afecta a móvil y tablet
   const [view, setView] = useState(isSmallScreen() ? 'reading' : 'a4');
   const [editing, setEditing] = useState(false);
@@ -41,7 +44,7 @@ export default function App() {
     },
   });
 
-  const cv = optimized ? OPTIMIZED_CV : BASE_CV;
+  const cv = result || BASE_CV;
   const ready = cvText.trim() && offerText.trim();
   const canSubmit = ready && !loading;
 
@@ -50,22 +53,35 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Simulación de la llamada a la IA (2 s). Sustituir por la petición al backend.
-  const handleOptimize = () => {
+  // Envía el CV y la oferta a la función /api/optimize, que llama a Claude.
+  const handleOptimize = async () => {
     if (!canSubmit) return;
     document.activeElement?.blur();
     setLoading(true);
-    setTimeout(() => {
-      setOptimized(true);
-      setLoading(false);
+    setError('');
+    try {
+      const res = await fetch('/api/optimize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cv: cvText, offer: offerText }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'No se ha podido adaptar el CV. Inténtalo de nuevo.');
+      setResult(data);
       goTo('preview');
       showToast('CV adaptado a la oferta');
-    }, 2000);
+    } catch (err) {
+      const offline = err instanceof TypeError;
+      setError(offline ? 'No hay conexión. Comprueba tu red y vuelve a intentarlo.' : err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReset = () => {
-    setOptimized(false);
-    showToast('Vista restaurada al CV original');
+  const loadExample = () => {
+    pdf.reset();
+    setCvText(SAMPLE_CV);
+    setOfferText(SAMPLE_OFFER);
   };
 
   // Abre el diálogo del sistema: «Guardar como PDF» en ordenador, «Compartir › Guardar en Archivos» en el móvil.
@@ -74,7 +90,7 @@ export default function App() {
   const optimizeLabel = loading ? (
     <>
       <Loader2 size={18} className="animate-spin" aria-hidden="true" />
-      Cargando…
+      Adaptando tu CV…
     </>
   ) : (
     <>
@@ -175,14 +191,28 @@ export default function App() {
               <button type="button" onClick={handleOptimize} disabled={!canSubmit} aria-busy={loading} className={btnPrimary}>
                 {optimizeLabel}
               </button>
-              {optimized && !loading && (
-                <button type="button" onClick={handleReset} className="inline-flex h-12 items-center gap-2 rounded-full px-5 text-[15px] font-medium text-gray-600 hover:bg-white hover:text-gray-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
-                  <RotateCcw size={16} aria-hidden="true" />
-                  Ver original
-                </button>
-              )}
             </div>
-            {!ready && <p className="text-[14px] sm:text-[13px] text-gray-500">Rellena los dos campos para poder optimizar.</p>}
+            {loading && (
+              <p className="text-[14px] sm:text-[13px] text-gray-500" aria-live="polite">
+                La IA está leyendo tu CV y la oferta. Suele tardar entre 15 y 40 segundos.
+              </p>
+            )}
+            {error && (
+              <p role="alert" className="flex items-start gap-2 rounded-2xl bg-red-50 px-4 py-3 text-[14px] leading-snug text-red-700">
+                <AlertCircle size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
+                {error}
+              </p>
+            )}
+            {!ready && (
+              <p className="text-[14px] sm:text-[13px] text-gray-500">
+                Rellena los dos campos para poder optimizar.{' '}
+                {!cvText && !offerText && (
+                  <button type="button" onClick={loadExample} className="font-medium text-blue-600 underline-offset-2 hover:underline">
+                    Probar con un ejemplo
+                  </button>
+                )}
+              </p>
+            )}
           </div>
 
           {/* Columna derecha: previsualización */}
@@ -191,7 +221,7 @@ export default function App() {
               <div className="min-w-0">
                 <h2 className="text-[17px] sm:text-[15px] font-semibold tracking-tight">Previsualización</h2>
                 <p className="text-[13px] text-gray-500">
-                  {optimized ? 'Las habilidades nuevas aparecen en azul' : 'A4 · 210 × 297 mm'}
+                  {optimized ? 'En azul, las habilidades que pide la oferta' : 'Ejemplo · aquí aparecerá tu CV adaptado'}
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -218,9 +248,23 @@ export default function App() {
 
             <div className="rounded-3xl border border-gray-200 bg-gray-100/60 p-3 sm:p-8">
               <div className="paper-shadow mx-auto w-full max-w-[560px]">
-                <CvSheet data={cv} optimized={optimized} refreshing={loading} reading={view === 'reading'} />
+                <CvSheet data={cv} refreshing={loading} reading={view === 'reading'} />
               </div>
             </div>
+
+            {result?.gaps?.length > 0 && (
+              <section className="mt-5 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+                <h3 className="text-[15px] font-semibold tracking-tight">La oferta pide y tu CV no menciona</h3>
+                <p className="mt-1 text-[13px] text-gray-500">No se ha añadido al CV. Si lo tienes, inclúyelo en tu texto y vuelve a optimizar.</p>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {result.gaps.map((g, i) => (
+                    <li key={i} className="rounded-full bg-amber-50 px-3 py-1.5 text-[13px] font-medium text-amber-800">
+                      {g}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </div>
         </div>
       </main>
@@ -238,17 +282,10 @@ export default function App() {
             </button>
           ) : (
             <>
-              {optimized ? (
-                <button type="button" onClick={handleReset} className={`${btnSecondary} flex-1`}>
-                  <RotateCcw size={18} aria-hidden="true" />
-                  Original
-                </button>
-              ) : (
-                <button type="button" onClick={() => goTo('data')} className={`${btnSecondary} flex-1`}>
-                  <PencilLine size={18} aria-hidden="true" />
-                  Editar
-                </button>
-              )}
+              <button type="button" onClick={() => goTo('data')} className={`${btnSecondary} flex-1`}>
+                <PencilLine size={18} aria-hidden="true" />
+                Editar
+              </button>
               <button type="button" onClick={handleDownload} className={`${btnPrimary} flex-[1.4] px-5`}>
                 <Download size={18} aria-hidden="true" />
                 Descargar PDF
@@ -259,6 +296,14 @@ export default function App() {
       </div>
 
       <Toast message={toast} />
+
+      {/* Copia del CV solo para imprimir / guardar como PDF */}
+      {createPortal(
+        <div className="print-root">
+          <CvSheet data={cv} />
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

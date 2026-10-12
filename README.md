@@ -2,7 +2,15 @@
 
 Frontend de CV Match: adapta tu currículum a cada oferta de empleo con IA. Hecho con React, Vite, Tailwind CSS, Lucide y pdf.js. Se instala en el móvil como una app (PWA).
 
-> La optimización con IA está simulada (2 segundos y datos de ejemplo). El punto de conexión con tu backend es la función `handleOptimize` en `src/App.jsx`.
+> La optimización la hace Gemini (Google) desde la función `api/optimize.js`, con la clave gratuita de Google AI Studio. Parte siempre de los datos de tu CV: no inventa empresas, cargos, fechas ni estudios, y lo que la oferta pide y tu CV no menciona aparece aparte, sin añadirse al currículum.
+
+## Clave de Gemini (obligatoria, gratuita)
+
+1. Crea o copia tu clave en aistudio.google.com › **Get API key**.
+2. En Vercel: tu proyecto › **Settings › Environment Variables** › añade `GEMINI_API_KEY` con la clave, marcando Production, Preview y Development.
+3. Vuelve a desplegar (**Deployments › ⋯ › Redeploy**) para que la función la lea.
+
+Opcional: `GEMINI_MODEL` para cambiar de modelo (por defecto `gemini-3.8-flash`, con nivel gratuito).
 
 ## Probar en local
 
@@ -10,10 +18,10 @@ Necesitas Node.js 18 o superior.
 
 ```bash
 npm install
-npm run dev
+npx vercel dev
 ```
 
-Abre la dirección que aparece en la terminal. Con `--host` también sale una dirección de red (`http://192.168.x.x:5173`) para abrirla desde el móvil en la misma wifi.
+`vercel dev` arranca la web y también la función de IA (con `npm run dev` solo verías la interfaz). Crea un archivo `.env.local` con `GEMINI_API_KEY=tu_clave` para probar en local.
 
 ## 1. Subir a GitHub
 
@@ -68,13 +76,14 @@ El botón abre el diálogo del sistema con solo el folio A4:
 
 ## Estructura
 
-Todos los archivos van en la raíz del repositorio, sin carpetas. Así se pueden subir a GitHub arrastrándolos desde el navegador sin que se pierda nada.
+Todos los archivos van en la raíz del repositorio, salvo la función de IA, que Vercel exige dentro de la carpeta `api/`. Así se pueden subir a GitHub arrastrándolos desde el navegador sin que se pierda nada.
 
 ```
 index.html              Página de entrada
 main.jsx                Arranque de React y del service worker
 App.jsx                 Pantalla principal, pestañas y barra móvil
-cvData.js               CV de ejemplo y resultado simulado
+api/optimize.js         Función de Vercel que llama a Gemini
+cvData.js               Textos de ejemplo y CV de muestra
 InputCard.jsx           Tarjeta con área de texto expansible
 PdfAttach.jsx           Botón «PDF» y ficha del archivo importado
 CvSheet.jsx             CV maquetado (Folio / Lectura)

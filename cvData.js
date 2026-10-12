@@ -1,4 +1,4 @@
-/* Datos de ejemplo y resultado simulado de la IA */
+/* Textos de ejemplo («Probar con un ejemplo») y CV de muestra que se ve antes de optimizar */
 
 export const SAMPLE_CV = `Marta Solís Rivera
 Diseñadora instruccional y desarrolladora frontend · Madrid
@@ -50,30 +50,4 @@ export const BASE_CV = {
     { title: 'Grado en Pedagogía', school: 'Universidad Complutense de Madrid', year: '2017' },
   ],
   skills: ['HTML y CSS', 'JavaScript', 'Moodle', 'Articulate Storyline', 'SCORM 1.2', 'Diseño instruccional', 'Figma'],
-};
-
-export const OPTIMIZED_CV = {
-  ...BASE_CV,
-  role: 'Frontend Developer · Plataformas E-learning (React)',
-  summary:
-    'Desarrolladora frontend especializada en plataformas de aprendizaje, con 7 años en e-learning. Construyo interfaces accesibles en React y TypeScript y aporto criterio pedagógico para que la experiencia del alumno sea medible con SCORM y xAPI.',
-  experience: [
-    {
-      ...BASE_CV.experience[0],
-      title: 'Desarrolladora frontend e-learning',
-      bullets: [
-        'Desarrollo de componentes React reutilizables para el LMS interno, usados en 40+ cursos.',
-        'Auditoría y corrección de accesibilidad según WCAG 2.2 AA en todo el catálogo.',
-        'Integración de seguimiento xAPI para analítica de aprendizaje.',
-      ],
-    },
-    {
-      ...BASE_CV.experience[1],
-      bullets: [
-        'Empaquetado y depuración de cursos SCORM 1.2 y 2004 en Moodle.',
-        'Tutoría online de grupos de hasta 60 alumnos y recogida de feedback de uso.',
-      ],
-    },
-  ],
-  skills: ['React', 'TypeScript', 'Next.js', 'Accesibilidad WCAG 2.2', 'SCORM / xAPI', 'Jest', 'HTML y CSS', 'Diseño instruccional'],
 };
