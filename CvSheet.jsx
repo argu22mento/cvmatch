@@ -1,4 +1,4 @@
-import { BASE_CV, OPTIMIZED_CV } from '../data/cvData';
+import { BASE_CV, OPTIMIZED_CV } from './cvData';
 
 /** Currículum maquetado como folio A4 (o en modo lectura para pantallas pequeñas). */
 export default function CvSheet({ data, optimized, refreshing, reading }) {

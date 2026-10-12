@@ -29,7 +29,7 @@ git remote add origin https://github.com/TU_USUARIO/cv-match.git
 git push -u origin main
 ```
 
-Si prefieres no usar la terminal, en el repositorio vacío pulsa **uploading an existing file** y arrastra el contenido de la carpeta (sin `node_modules` ni `dist`).
+Si prefieres no usar la terminal, en el repositorio vacío pulsa **uploading an existing file** y arrastra todos los archivos de la carpeta.
 
 ## 2. Importar en Vercel
 
@@ -68,20 +68,23 @@ El botón abre el diálogo del sistema con solo el folio A4:
 
 ## Estructura
 
+Todos los archivos van en la raíz del repositorio, sin carpetas. Así se pueden subir a GitHub arrastrándolos desde el navegador sin que se pierda nada.
+
 ```
-src/
-  App.jsx                 Pantalla principal, pestañas y barra móvil
-  data/cvData.js          CV de ejemplo y resultado simulado
-  components/
-    InputCard.jsx         Tarjeta con área de texto expansible
-    PdfAttach.jsx         Botón «PDF» y ficha del archivo importado
-    CvSheet.jsx           CV maquetado (Folio / Lectura)
-    Segmented.jsx         Control segmentado estilo iOS
-    Toast.jsx             Avisos
-  hooks/usePdfImport.js   Selector, arrastrar y soltar, errores
-  lib/extractPdfText.js   Lectura del PDF en el navegador
-public/
-  manifest.webmanifest    Datos de la app instalable
-  sw.js                   Funcionamiento sin conexión
-  icons/                  Iconos de la app
+index.html              Página de entrada
+main.jsx                Arranque de React y del service worker
+App.jsx                 Pantalla principal, pestañas y barra móvil
+cvData.js               CV de ejemplo y resultado simulado
+InputCard.jsx           Tarjeta con área de texto expansible
+PdfAttach.jsx           Botón «PDF» y ficha del archivo importado
+CvSheet.jsx             CV maquetado (Folio / Lectura)
+Segmented.jsx           Control segmentado estilo iOS
+Toast.jsx               Avisos
+usePdfImport.js         Selector, arrastrar y soltar, errores
+extractPdfText.js       Lectura del PDF en el navegador
+index.css               Estilos (Tailwind + folio A4 + impresión)
+manifest.webmanifest    Datos de la app instalable
+sw.js                   Funcionamiento sin conexión
+*.png, favicon.svg      Iconos de la app
+vite.config.js          Compilación; copia manifest, sw.js e iconos a la web publicada
 ```

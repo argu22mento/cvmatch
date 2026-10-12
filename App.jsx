@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react';
 import { Briefcase, Download, FileText, Loader2, PencilLine, RotateCcw, Sparkles, Wand2 } from 'lucide-react';
 
-import { BASE_CV, OPTIMIZED_CV, SAMPLE_CV, SAMPLE_OFFER } from './data/cvData';
-import { usePdfImport } from './hooks/usePdfImport';
-import InputCard from './components/InputCard';
-import { PdfAttachButton, PdfBanner } from './components/PdfAttach';
-import CvSheet from './components/CvSheet';
-import Segmented from './components/Segmented';
-import Toast from './components/Toast';
+import { BASE_CV, OPTIMIZED_CV, SAMPLE_CV, SAMPLE_OFFER } from './cvData';
+import { usePdfImport } from './usePdfImport';
+import InputCard from './InputCard';
+import { PdfAttachButton, PdfBanner } from './PdfAttach';
+import CvSheet from './CvSheet';
+import Segmented from './Segmented';
+import Toast from './Toast';
 
 const isSmallScreen = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 639px)').matches;
 

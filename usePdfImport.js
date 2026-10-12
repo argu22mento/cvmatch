@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { extractPdfText, MAX_PDF_MB } from '../lib/extractPdfText';
+import { extractPdfText, MAX_PDF_MB } from './extractPdfText';
 
 /**
  * Gestiona la importación del CV en PDF: selector de archivo, arrastrar y soltar,
