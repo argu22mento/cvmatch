@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bar-h: 76px; /* alto de la barra de acciones inferior en móvil */
+}
+
+html,
+body {
+  background: #f5f5f7;
+  color: #111827;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, system-ui, sans-serif;
+  letter-spacing: -0.005em;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Botones sin el retraso de doble toque en iOS */
+button,
+label,
+textarea {
+  touch-action: manipulation;
+}
+
+/* Barra de acciones inferior (solo móvil) y aviso */
+.bottom-bar {
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+.toast {
+  bottom: calc(var(--bar-h) + 12px + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 1024px) {
+  .toast { bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* ───────────── Folio A4 (escala con su propio ancho) ───────────── */
+
+.a4 {
+  container-type: inline-size;
+}
+
+.paper-shadow {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 12px 40px -12px rgba(0, 0, 0, 0.18);
+  border-radius: 6px;
+}
+
+.cv {
+  height: 100%;
+  padding: 7.5cqw 8cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 4.2cqw;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, system-ui, sans-serif;
+  font-size: 1.78cqw;
+  line-height: 1.5;
+}
+.cv-head { padding-bottom: 3.4cqw; border-bottom: 0.18cqw solid #1d1d1f; }
+.cv-name { font-size: 4.8cqw; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+.cv-role { margin-top: 1cqw; font-size: 2.3cqw; font-weight: 500; color: #0066cc; letter-spacing: -0.01em; }
+.cv-contact { margin-top: 1.4cqw; font-size: 1.6cqw; color: #6e6e73; }
+.cv-h { font-size: 1.45cqw; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: #6e6e73; margin-bottom: 1.6cqw; }
+.cv-p { color: #3a3a3c; }
+.cv-stack { display: flex; flex-direction: column; gap: 2.6cqw; }
+.cv-stack-sm { display: flex; flex-direction: column; gap: 1.2cqw; }
+.cv-row { display: flex; justify-content: space-between; align-items: baseline; gap: 2cqw; }
+.cv-strong { font-weight: 600; }
+.cv-muted { color: #6e6e73; font-weight: 400; }
+.cv-nowrap { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cv-list { margin-top: 0.8cqw; padding-left: 2.6cqw; list-style: disc; color: #3a3a3c; display: flex; flex-direction: column; gap: 0.5cqw; }
+.cv-list li::marker { color: #aeaeb2; }
+.cv-skills { display: flex; flex-wrap: wrap; gap: 1.2cqw; }
+.cv-skills li { padding: 0.6cqw 1.8cqw; border-radius: 999px; background: #f5f5f7; color: #1d1d1f; font-weight: 500; }
+.cv-skills li.is-new { background: #e8f1fc; color: #0058b0; }
+
+/* ───────────── Modo lectura: texto a tamaño cómodo en el móvil ───────────── */
+
+@media screen {
+  .a4.is-reading { aspect-ratio: auto; container-type: normal; }
+  .is-reading .cv { padding: 24px 20px 28px; gap: 22px; font-size: 15px; line-height: 1.55; }
+  .is-reading .cv-head { padding-bottom: 16px; border-bottom-width: 1px; }
+  .is-reading .cv-name { font-size: 26px; }
+  .is-reading .cv-role { margin-top: 6px; font-size: 16px; }
+  .is-reading .cv-contact { margin-top: 8px; font-size: 13px; line-height: 1.5; }
+  .is-reading .cv-h { font-size: 12px; margin-bottom: 8px; }
+  .is-reading .cv-stack { gap: 16px; }
+  .is-reading .cv-stack-sm { gap: 8px; }
+  .is-reading .cv-row { flex-direction: column; gap: 0; }
+  .is-reading .cv-list { margin-top: 6px; padding-left: 18px; gap: 4px; }
+  .is-reading .cv-skills { gap: 8px; }
+  .is-reading .cv-skills li { padding: 5px 12px; font-size: 14px; }
+}
+
+/* ───────────── Impresión / Guardar como PDF: solo el folio ───────────── */
+
+@media print {
+  @page { size: A4; margin: 0; }
+  html, body, #root { background: #fff !important; height: 297mm !important; overflow: hidden !important; }
+  body * { visibility: hidden !important; }
+  .a4, .a4 * { visibility: visible !important; }
+  .a4 {
+    position: fixed !important;
+    inset: 0 auto auto 0;
+    width: 210mm !important;
+    height: 297mm !important;
+    max-width: none !important;
+    aspect-ratio: auto !important;
+    border-radius: 0 !important;
+    opacity: 1 !important;
+    container-type: inline-size !important;
+  }
+  .a4 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation-duration: 0.01ms !important; }
+}
